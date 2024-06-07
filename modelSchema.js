@@ -4,8 +4,10 @@ const paymentSchema = mongoose.Schema(
     {
         stripeId: { type: String, required: true, unique: true },
         amount: { type: Number, required: true },
-        currency: { type: Number, required: true },
-        status: { type: Number, required: true },
+        currency: { type: String, required: true },
+        status: {
+            type: String, default: "success",
+        },
         createdAt: { type: Date, default: Date.now },
     },
     {
@@ -13,4 +15,4 @@ const paymentSchema = mongoose.Schema(
     }
 );
 
-module.exports = mongoose.model("Payment", paymentSchema);
+module.exports = mongoose.model("PaymentIntent", paymentSchema);

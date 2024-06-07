@@ -1,9 +1,10 @@
 const express = require('express');
-const dotenv = require("dotenv").config();
+require("dotenv").config();
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 
 const connectDB = require("./config/db");
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 
 connectDB(); //connection to the mongo
 
@@ -11,11 +12,9 @@ const app = express();
 
 app.use(express.json()); // to eccept json data
 
-app.use("/api/vi", require("./routes/userRoutes"));
-app.use("/api/chat", require("./routes/chatRoutes"));
+app.use("/api/v1", require("./routes/paymentRoutes"));
 
-
-const server = app.listen(
+app.listen(
     port,
-    console.log(`server listening on port: ${port}`.yellow.bold)
-  );
+    console.log(`server listening on port: ${port}`)
+);
