@@ -1,5 +1,6 @@
 const express = require('express');
 require("dotenv").config();
+const swaggerDocs = require('./swagger');
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 
 const connectDB = require("./config/db");
@@ -13,6 +14,8 @@ const app = express();
 app.use(express.json()); // to eccept json data
 
 app.use("/api/v1", require("./routes/paymentRoutes"));
+
+swaggerDocs(app);
 
 app.listen(
     port,
