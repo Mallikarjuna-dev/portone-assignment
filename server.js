@@ -1,6 +1,8 @@
 const express = require('express');
 require("dotenv").config();
+
 const swaggerDocs = require('./swagger');
+
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 
 const connectDB = require("./config/db");

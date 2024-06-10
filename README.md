@@ -52,3 +52,4 @@ Configure Stripe keys in the `.env` file.
 <!-- https://portone.onrender.com/api-docs -->
 
 ## Postman Link
+ https://winter-crescent-303993.postman.co/workspace/Team-Workspace~95f1876e-0fd4-4092-8bb6-f7548064da03/collection/19126737-6a33d8fc-15ed-4660-81c9-8ac025eb4dd5?action=share&creator=19126737
