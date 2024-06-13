@@ -48,17 +48,17 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
  *         $ref: '#/components/responses/InternalServerError'
  */
 const createIntent = async (req, res) => {
-    const { amount, currency } = req.body;
+    const { amount, currency, payment_method } = req.body;
 
-    if (!amount || !currency) {
-        return res.status(400).json({ error: 'Amount and currency are required' });
-    }
+    // if (!amount || !currency || payment_method) {
+    //     return res.status(400).json({ error: 'Amount and currency are required' });
+    // }
 
     try {
         const paymentIntent = await stripe.paymentIntents.create({
             amount,
             currency,
-            capture_method: 'manual'
+            payment_method,
         });
 
         const newPaymentIntent = new Payment({
@@ -113,7 +113,6 @@ const createIntent = async (req, res) => {
  */
 const captureIntent = async (req, res) => {
     const { id } = req.params;
-    const { payment_method } = req.body;
 
     try {
         let paymentIntent = await stripe.paymentIntents.retrieve(id);
@@ -126,13 +125,14 @@ const captureIntent = async (req, res) => {
                 payment_method
             });
         }
+        // const paymentIntent = await stripe.paymentIntents.capture(id);
 
         if (paymentIntent.status === 'requires_capture') {
             paymentIntent = await stripe.paymentIntents.capture(id);
             await Payment.findOneAndUpdate({ stripeId: id }, { status: paymentIntent.status });
         }
 
-        res.json(paymentIntent);
+        res.status(200).json(paymentIntent);
     } catch (error) {
         console.error('Error capturing payment intent:', error);
         res.status(500).json({ error: error.message });
@@ -171,13 +171,13 @@ const captureIntent = async (req, res) => {
 const createRefund = async (req, res) => {
     const { id } = req.params;
     try {
-        const paymentIntent = await stripe.paymentIntents.retrieve(id);
+        // const paymentIntent = await stripe.paymentIntents.retrieve(id);
 
-        if (paymentIntent.status !== 'succeeded') {
-            return res.status(400).json({ error: 'PaymentIntent must be successfully charged before creating a refund' });
-        }
+        // if (paymentIntent.status !== 'succeeded') {
+        //     return res.status(400).json({ error: 'PaymentIntent must be successfully charged before creating a refund' });
+        // }
         const refund = await stripe.refunds.create({ payment_intent: id });
-        res.json(refund);
+        res.status(201).json(refund);
     } catch (error) {
         console.error('Error creating refund:', error);
         res.status(500).json({ error: error.message });
@@ -204,8 +204,8 @@ const createRefund = async (req, res) => {
  */
 const getAllPay = async (req, res) => {
     try {
-        const paymentIntents = await Payment.find();
-        res.json(paymentIntents);
+        const paymentIntents = await stripe.paymentIntents.list();
+        res.status(200).json(paymentIntents);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
